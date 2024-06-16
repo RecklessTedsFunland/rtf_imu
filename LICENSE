@@ -1,16 +1,6 @@
-# ROS2
+MIT License
 
-- **rtf_imu:** IMU
-
-```bash
-cd ros_ws
-colcon build
-ros2 run gci_sensors <binary>
-```
-
-# MIT License
-
-**Copyright (c) 2022 Kevin Walchko**
+Copyright (c) 2022 Kevin Walchko
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

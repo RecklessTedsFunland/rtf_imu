@@ -40,13 +40,8 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 
-# set(SDK_SRC "${CMAKE_SOURCE_DIR}/..")
-
 add_executable(gci_imu
     "${CMAKE_SOURCE_DIR}/src/main.cpp")
-# target_include_directories(main PRIVATE
-#     # "${SDK_SRC}/linux/"
-#     "${SDK_SRC}/src/")
 target_link_libraries(gci_imu squaternion gcisensors)
 
 ament_target_dependencies(gci_imu rclcpp std_msgs sensor_msgs geometry_msgs)
