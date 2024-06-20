@@ -21,12 +21,12 @@ using namespace BMP390;
 using namespace gci::sensors;
 
 
-namespace gci_imu {
+namespace rtf_imu {
 
-class gciImu : public rclcpp::Node {
+class rtfImu : public rclcpp::Node {
 public:
-  gciImu(): Node("gci_mu"), qcf(0.1) {
-    RCLCPP_INFO(this->get_logger(), "gci_imu: CTRL+C to exit!");
+  rtfImu(): Node("rtf_imu"), qcf(0.1) {
+    RCLCPP_INFO(this->get_logger(), "rtf_imu: CTRL+C to exit!");
 
     // Setup sensors --------------------------------------
     int err = mag.init(RANGE_4GAUSS,ODR_155HZ);
@@ -49,13 +49,13 @@ public:
 
     // Setup timers for publishers ------------------------
     auto interval = std::chrono::milliseconds(1000/pub_rate_agm);
-    timer_agm = this->create_wall_timer(interval, std::bind(&gciImu::cb_agm, this));
+    timer_agm = this->create_wall_timer(interval, std::bind(&rtfImu::cb_agm, this));
     interval = std::chrono::milliseconds(1000/pub_rate_pt);
-    timer_pt = this->create_wall_timer(interval, std::bind(&gciImu::cb_pt, this));
+    timer_pt = this->create_wall_timer(interval, std::bind(&rtfImu::cb_pt, this));
   }
 
-  ~gciImu() {
-    RCLCPP_INFO(this->get_logger(), "Bye gci_imu!");
+  ~rtfImu() {
+    RCLCPP_INFO(this->get_logger(), "Bye rtf_imu!");
   }
 
   // void error_init(int err, std::string s) {
@@ -182,12 +182,12 @@ public:
   QCF<double> qcf;
 };
 
-} // namespace gciImu
+} // namespace rtfImu
 
 
 int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<gci_imu::gciImu>());
+  rclcpp::spin(std::make_shared<rtf_imu::rtfImu>());
   rclcpp::shutdown();
   return 0;
 }

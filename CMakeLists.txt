@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(gci_sensors)
+project(rtf_sensors)
 
 # Default to C17
 if(NOT CMAKE_C_STANDARD)
@@ -40,16 +40,16 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 
-add_executable(gci_imu
+add_executable(rtf_imu
     "${CMAKE_SOURCE_DIR}/src/main.cpp")
-target_link_libraries(gci_imu squaternion gcisensors)
+target_link_libraries(rtf_imu squaternion gcisensors)
 
-ament_target_dependencies(gci_imu rclcpp std_msgs sensor_msgs geometry_msgs)
+ament_target_dependencies(rtf_imu rclcpp std_msgs sensor_msgs geometry_msgs)
 
 # you NEED this so setup.bash can find the binary
 install(
   TARGETS
-    gci_imu
+    rtf_imu
   DESTINATION
     "lib/${PROJECT_NAME}"
 )

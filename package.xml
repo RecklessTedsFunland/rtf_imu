@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>gci_sensors</name>
+  <name>rtf_sensors</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Wraps gciSensors into ROS2 capable nodes.</description>
   <maintainer email="walchko@users.noreply.github.com">root</maintainer>
   <license>MIT</license>
 
