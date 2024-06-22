@@ -84,9 +84,9 @@ public:
         temp_msg.temperature = pt.temp;
         temp_msg.variance = 0;
 
-        RCLCPP_INFO(this->get_logger(), "Publishing temperature");
+        // RCLCPP_INFO(this->get_logger(), "Publishing temperature");
         pub_temp->publish(temp_msg);
-        RCLCPP_INFO(this->get_logger(), "Publishing pressure");
+        // RCLCPP_INFO(this->get_logger(), "Publishing pressure");
         pub_press->publish(press_msg);
       }
     }
@@ -112,7 +112,7 @@ public:
         mag_msg.magnetic_field.z = m.z;
         mag_msg.magnetic_field_covariance[0] = -1;
 
-        RCLCPP_INFO(this->get_logger(), "Publishing mag");
+        // RCLCPP_INFO(this->get_logger(), "Publishing mag");
         pub_mag->publish(mag_msg);
       }
     }
@@ -127,6 +127,9 @@ public:
         a.y = m.a.y;
         a.z = m.a.z;
         vect_t<double> w;
+        w.x = m.g.x;
+        w.y = m.g.y;
+        w.z = m.g.z;
         qcf.update(a,w,0.01);
         q = qcf.q;
 
@@ -147,7 +150,7 @@ public:
         imu_msg.angular_velocity.z = m.g.z;
         imu_msg.angular_velocity_covariance[0] = -1;
 
-        RCLCPP_INFO(this->get_logger(), "Publishing accel/gyro");
+        // RCLCPP_INFO(this->get_logger(), "Publishing accel/gyro");
         pub_imu->publish(imu_msg);
       }
     }
