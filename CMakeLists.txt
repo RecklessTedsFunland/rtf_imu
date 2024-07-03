@@ -36,10 +36,12 @@ FetchContent_MakeAvailable( squaternion gcisensors )
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
 
 
 list(APPEND node_list
@@ -55,7 +57,8 @@ foreach(app ${node_list})
     target_link_libraries(${app} squaternion gcisensors)
     ament_target_dependencies(
         ${app}
-        rclcpp std_msgs sensor_msgs geometry_msgs
+        rclcpp tf2 tf2_ros
+        std_msgs sensor_msgs geometry_msgs
     )
 
     # you NEED this so setup.bash can find the binary
@@ -65,7 +68,11 @@ foreach(app ${node_list})
 endforeach()
 
 install(DIRECTORY launch
-  DESTINATION share/${PROJECT_NAME})
+    DESTINATION share/${PROJECT_NAME})
+
+install(DIRECTORY config
+    DESTINATION share/${PROJECT_NAME}
+)
 
 # rosidl_generate_interfaces(${PROJECT_NAME}
 #    "msgs/NemaSentence.msg"

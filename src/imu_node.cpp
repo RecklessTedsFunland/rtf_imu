@@ -1,9 +1,13 @@
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/string.hpp>
-#include "sensor_msgs/msg/imu.hpp"
-#include "sensor_msgs/msg/magnetic_field.hpp"
-#include "sensor_msgs/msg/fluid_pressure.hpp"
-#include "sensor_msgs/msg/temperature.hpp"
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_ros/static_transform_broadcaster.h>
+#include <sensor_msgs/msg/imu.hpp>
+#include <sensor_msgs/msg/magnetic_field.hpp>
+#include <sensor_msgs/msg/fluid_pressure.hpp>
+#include <sensor_msgs/msg/temperature.hpp>
+
+#include <cmath>
 
 #include <gciSensors.hpp>
 #include <squaternion.hpp>
@@ -13,7 +17,8 @@ using namespace std::chrono_literals;  // cpp_std s,ms,etc
 
 // constexpr int SENSOR_AGM_RATE_HZ = 1;
 // constexpr int SENSOR_PT_RATE_HZ = 1;
-constexpr std::string FRAME_ID = "imu";
+// constexpr std::string FRAME_ID = "imu";
+#define FRAME_ID "imu"
 
 using namespace LIS3MDL;
 using namespace LSM6DSOX;
@@ -41,11 +46,20 @@ public:
     if (err == 0) bmp_ok = true;
     else RCLCPP_ERROR(this->get_logger(), "BMP390 failed");
 
+    // Setup Parameters -----------------------------------
+    // port = this->declare_parameter<std::string>("urg_port", URG_DEFAULT_SERIAL_PORT);
+
+
     // Setup publishers -----------------------------------
     pub_imu = this->create_publisher<sensor_msgs::msg::Imu>("imu", 10);
     pub_mag = this->create_publisher<sensor_msgs::msg::MagneticField>("mag", 10);
     pub_press = this->create_publisher<sensor_msgs::msg::FluidPressure>("press", 10);
     pub_temp = this->create_publisher<sensor_msgs::msg::Temperature>("temp", 10);
+
+    // Publish static transforms once at startup
+    // static_tf = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
+    // this->make_transforms(transformation);
+    init_tf(0,0,0);
 
     // Setup timers for publishers ------------------------
     auto interval = std::chrono::milliseconds(1000/pub_rate_agm);
@@ -62,6 +76,36 @@ public:
   //   if (err == 0)
   //   else RCLCPP_ERROR(this->get_logger(), "LSM6DSOX failed");
   // }
+  void init_tf(double roll_deg, double pitch_deg, double yaw_deg) {
+    static_tf = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
+
+    // printf(">> StaticFramePublisher START\n");
+    geometry_msgs::msg::TransformStamped t;
+
+    t.header.stamp = this->get_clock()->now();
+    t.header.frame_id = "world";
+    t.child_frame_id = FRAME_ID;
+    // printf(">> clock done\n");
+
+    tf2::Quaternion q;
+    q.setRPY(
+      roll_deg*M_PI/180.0,
+      pitch_deg*M_PI/180.0,
+      yaw_deg*M_PI/180.0
+    );
+    // printf(">> q done\n");
+
+    t.transform.translation.x = 0.0;
+    t.transform.translation.y = 0.0;
+    t.transform.translation.z = 0.0;
+    t.transform.rotation.x = q.x();
+    t.transform.rotation.y = q.y();
+    t.transform.rotation.z = q.z();
+    t.transform.rotation.w = q.w();
+    // printf(">> transform done\n");
+
+    static_tf->sendTransform(t);
+  }
 
   void cb_pt() {
     auto press_msg = sensor_msgs::msg::FluidPressure();
@@ -179,6 +223,7 @@ public:
   rclcpp::Publisher<sensor_msgs::msg::MagneticField>::SharedPtr pub_mag;
   rclcpp::Publisher<sensor_msgs::msg::FluidPressure>::SharedPtr pub_press;
   rclcpp::Publisher<sensor_msgs::msg::Temperature>::SharedPtr pub_temp;
+  std::shared_ptr<tf2_ros::StaticTransformBroadcaster> static_tf;
 
   // squaternions
   QuaternionT<double> q;

@@ -1,11 +1,13 @@
 # ROS2
 
-- **rtf_imu:** IMU
+- Nodes:
+    - `rtf_imu`: IMU
+    - `rtf_gps`: gps
 
 ```bash
 cd ros_ws
-colcon build
-ros2 run gci_sensors <binary>
+colcon build --packages-select rtf_sensors
+ros2 run rtf_sensors <node>
 ```
 
 # MIT License

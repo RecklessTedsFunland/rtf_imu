@@ -1,1 +1,4 @@
 ---
+pycamera:
+  ros__parameters:
+    x: 0.0
