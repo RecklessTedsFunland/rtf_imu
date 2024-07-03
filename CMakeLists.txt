@@ -41,35 +41,46 @@ find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
-add_executable(rtf_imu
-    "${CMAKE_SOURCE_DIR}/src/main.cpp")
-target_link_libraries(rtf_imu squaternion gcisensors)
 
-ament_target_dependencies(rtf_imu rclcpp std_msgs sensor_msgs geometry_msgs)
-
-rosidl_generate_interfaces(${PROJECT_NAME}
-   "msgs/NemaSentence.msg"
-   "msgs/Gpgga.msg"
-   "msgs/Gpgsa.msg"
-   "msgs/Gpgst.msg"
-#    "msgs/Gpgsv.msg"
-#    "msgs/GpgsvSatellite.msg"
-   "msgs/Gprmc.msg"
-#    "msgs/Gpvtg.msg"
-#    "msgs/Gpzda.msg"
-   DEPENDENCIES std_msgs
+list(APPEND node_list
+    imu_node
+    gps_node
 )
 
+foreach(app ${node_list})
+    add_executable(${app} src/${app}.cpp)
+    target_include_directories(${app} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
+    target_link_libraries(${app} squaternion gcisensors)
+    ament_target_dependencies(
+        ${app}
+        rclcpp std_msgs sensor_msgs geometry_msgs
+    )
 
-ament_export_dependencies(rosidl_default_runtime)
+    # you NEED this so setup.bash can find the binary
+    install(
+        TARGETS "${app}"
+        DESTINATION "lib/${PROJECT_NAME}")
+endforeach()
 
-# you NEED this so setup.bash can find the binary
-install(
-  TARGETS
-    rtf_imu
-  DESTINATION
-    "lib/${PROJECT_NAME}"
-)
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME})
+
+# rosidl_generate_interfaces(${PROJECT_NAME}
+#    "msgs/NemaSentence.msg"
+#    "msgs/Gpgga.msg"
+#    "msgs/Gpgsa.msg"
+#    "msgs/Gpgst.msg"
+# #    "msgs/Gpgsv.msg"
+# #    "msgs/GpgsvSatellite.msg"
+#    "msgs/Gprmc.msg"
+# #    "msgs/Gpvtg.msg"
+# #    "msgs/Gpzda.msg"
+#    DEPENDENCIES std_msgs
+# )
+
+# ament_export_dependencies(rosidl_default_runtime)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
