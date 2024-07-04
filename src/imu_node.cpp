@@ -25,7 +25,6 @@ using namespace LSM6DSOX;
 using namespace BMP390;
 using namespace gci::sensors;
 
-
 namespace rtf_imu {
 
 class rtfImu : public rclcpp::Node {
